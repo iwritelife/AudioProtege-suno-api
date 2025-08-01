@@ -3,17 +3,17 @@ import Image from "next/image";
 
 export default function Footer() {
     return (
-        <footer className="flex w-full justify-center py-8 items-center bg-white/80 backdrop-blur-xl border-t border-slate-200/50 text-slate-600 text-sm px-4 lg:px-0">
+        <footer className="flex w-full justify-center py-6 items-center bg-gray-900/95 backdrop-blur-xl border-t border-gray-700 text-gray-400 text-xs px-4 lg:px-0">
             <div className="flex items-center gap-2">
-                <span>© 2024</span>
+                <span className="uppercase tracking-wider font-bold">© 2024</span>
                 <Link 
                     href="https://github.com/gcui-art/suno-api/" 
-                    className="text-slate-600 hover:text-slate-900 transition-colors duration-200 font-medium"
+                    className="text-gray-400 hover:text-white transition-colors duration-200 font-bold uppercase tracking-wider"
                 >
                     Tune Gawd
                 </Link>
-                <span className="text-slate-400">•</span>
-                <span className="text-slate-500">AI Music Studio</span>
+                <span className="text-gray-600">•</span>
+                <span className="text-gray-500 uppercase tracking-wider font-bold">AI Music Studio</span>
             </div>
         </footer>
     );
