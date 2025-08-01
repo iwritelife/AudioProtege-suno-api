@@ -73,49 +73,57 @@ export default function AudioPlayer({ song, className = '' }: AudioPlayerProps) 
 
   if (!song.audio_url) {
     return (
-      <div className={`bg-gray-100 rounded-lg p-4 ${className}`}>
-        <div className="text-center text-gray-500">
-          <div className="w-8 h-8 border-2 border-gray-300 border-t-indigo-600 rounded-full animate-spin mx-auto mb-2"></div>
-          <p className="text-sm">Audio is being generated...</p>
+      <div className={`bg-gradient-to-r from-slate-50 to-slate-100 rounded-2xl p-6 border border-slate-200/50 ${className}`}>
+        <div className="text-center">
+          <div className="w-12 h-12 border-3 border-slate-300 border-t-indigo-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-slate-700">Generating Audio</p>
+            <p className="text-xs text-slate-500">This usually takes 30-60 seconds</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`bg-white border rounded-lg p-4 shadow-sm ${className}`}>
+    <div className={`bg-gradient-to-r from-white to-slate-50/50 border border-slate-200/50 rounded-2xl p-6 shadow-sm ${className}`}>
       <audio ref={audioRef} src={song.audio_url} preload="metadata" />
       
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-6">
         {/* Play/Pause Button */}
         <button
           onClick={togglePlay}
-          className="flex-shrink-0 w-12 h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full flex items-center justify-center transition-colors"
+          className="flex-shrink-0 w-14 h-14 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-2xl flex items-center justify-center transition-all duration-200 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-105"
         >
           {isPlaying ? (
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
             </svg>
           ) : (
-            <svg className="w-5 h-5 ml-1" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+            <svg className="w-6 h-6 ml-1" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z"/>
             </svg>
           )}
         </button>
 
-        <div className="flex-1">
+        <div className="flex-1 space-y-2">
           {/* Progress Bar */}
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs text-gray-500 w-10">{formatTime(currentTime)}</span>
-            <input
-              type="range"
-              min="0"
-              max={duration || 0}
-              value={currentTime}
-              onChange={handleSeek}
-              className="flex-1 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-            />
-            <span className="text-xs text-gray-500 w-10">{formatTime(duration)}</span>
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-medium text-slate-500 w-12 text-right">{formatTime(currentTime)}</span>
+            <div className="flex-1 relative">
+              <input
+                type="range"
+                min="0"
+                max={duration || 0}
+                value={currentTime}
+                onChange={handleSeek}
+                className="w-full h-2 bg-slate-200 rounded-full appearance-none cursor-pointer slider"
+                style={{
+                  background: `linear-gradient(to right, #6366f1 0%, #6366f1 ${(currentTime / duration) * 100}%, #e2e8f0 ${(currentTime / duration) * 100}%, #e2e8f0 100%)`
+                }}
+              />
+            </div>
+            <span className="text-xs font-medium text-slate-500 w-12">{formatTime(duration)}</span>
           </div>
         </div>
 
@@ -123,21 +131,26 @@ export default function AudioPlayer({ song, className = '' }: AudioPlayerProps) 
         <div className="relative flex-shrink-0">
           <button
             onClick={() => setShowVolumeSlider(!showVolumeSlider)}
-            className="w-8 h-8 text-gray-600 hover:text-gray-900 flex items-center justify-center"
+            className="w-10 h-10 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl flex items-center justify-center transition-all duration-200"
           >
             {volume === 0 ? (
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.793L4.617 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.617l3.766-3.793a1 1 0 011.617.793z" clipRule="evenodd" />
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+              </svg>
+            ) : volume < 0.5 ? (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
               </svg>
             ) : (
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.793L4.617 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.617l3.766-3.793a1 1 0 011.617.793zM12.293 7.293a1 1 0 011.414 0L15 8.586l1.293-1.293a1 1 0 111.414 1.414L16.414 10l1.293 1.293a1 1 0 01-1.414 1.414L15 11.414l-1.293 1.293a1 1 0 01-1.414-1.414L13.586 10l-1.293-1.293a1 1 0 010-1.414z" clipRule="evenodd" />
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
               </svg>
             )}
           </button>
           
           {showVolumeSlider && (
-            <div className="absolute bottom-full right-0 mb-2 bg-white border rounded-lg shadow-lg p-2">
+            <div className="absolute bottom-full right-0 mb-3 bg-white/95 backdrop-blur-sm border border-slate-200/50 rounded-xl shadow-xl p-3">
               <input
                 type="range"
                 min="0"
@@ -145,8 +158,10 @@ export default function AudioPlayer({ song, className = '' }: AudioPlayerProps) 
                 step="0.1"
                 value={volume}
                 onChange={handleVolumeChange}
-                className="w-20 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-                style={{ writingMode: 'bt-lr' }}
+                className="w-24 h-2 bg-slate-200 rounded-full appearance-none cursor-pointer slider"
+                style={{
+                  background: `linear-gradient(to right, #6366f1 0%, #6366f1 ${volume * 100}%, #e2e8f0 ${volume * 100}%, #e2e8f0 100%)`
+                }}
               />
             </div>
           )}
@@ -156,19 +171,26 @@ export default function AudioPlayer({ song, className = '' }: AudioPlayerProps) 
       <style jsx>{`
         .slider::-webkit-slider-thumb {
           appearance: none;
-          width: 16px;
-          height: 16px;
+          width: 20px;
+          height: 20px;
           border-radius: 50%;
-          background: #4f46e5;
+          background: linear-gradient(135deg, #6366f1, #8b5cf6);
           cursor: pointer;
+          box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+          transition: all 0.2s ease;
+        }
+        .slider::-webkit-slider-thumb:hover {
+          transform: scale(1.1);
+          box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
         }
         .slider::-moz-range-thumb {
-          width: 16px;
-          height: 16px;
+          width: 20px;
+          height: 20px;
           border-radius: 50%;
-          background: #4f46e5;
+          background: linear-gradient(135deg, #6366f1, #8b5cf6);
           cursor: pointer;
           border: none;
+          box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
         }
       `}</style>
     </div>

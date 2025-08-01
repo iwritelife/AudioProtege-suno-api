@@ -2,7 +2,7 @@
 
 export default function Logo({ className = '', ...props }) {
   return (
-    <span className=" bg-indigo-900 rounded-full p-2">
+    <span className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-2 shadow-lg">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" className={className}
         fill="none" stroke="#ffffff" strokeWidth="1"
         strokeLinecap="round" strokeLinejoin="round">

@@ -119,39 +119,57 @@ For more detailed documentation, please check out the demo site:
   return (
     <>
       <Section className="">
-        <div className="flex flex-col m-auto py-20 text-center items-center justify-center gap-4 my-8
-        lg:px-20 px-4
-        bg-indigo-900/90 rounded-2xl border shadow-2xl hover:shadow-none duration-200">
-          <span className=" px-5 py-1 text-xs font-light border rounded-full 
-          border-white/20 uppercase text-white/50">
+        <div className="flex flex-col m-auto py-24 text-center items-center justify-center gap-6 my-12
+        lg:px-24 px-6
+        bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 rounded-3xl border border-indigo-500/20 shadow-2xl hover:shadow-3xl transition-all duration-300 relative overflow-hidden">
+          {/* Background decoration */}
+          <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent"></div>
+          <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-white/10 to-transparent rounded-full -translate-y-48 translate-x-48"></div>
+          
+          <span className="relative px-6 py-2 text-xs font-medium border rounded-full 
+          border-white/30 uppercase text-white/80 bg-white/10 backdrop-blur-sm">
             Unofficial
           </span>
-          <h1 className="font-bold text-7xl flex text-white/90">
-            Suno AI API
+          <h1 className="relative font-bold text-6xl lg:text-7xl text-white/95 tracking-tight">
+            <span className="bg-gradient-to-r from-white to-white/90 bg-clip-text text-transparent">
+              Suno AI API
+            </span>
           </h1>
-          <p className="text-white/80 text-lg">
-            `Suno-api` is an open-source project that enables you to set up your own Suno AI API.
+          <p className="relative text-white/85 text-xl lg:text-2xl max-w-3xl leading-relaxed font-light">
+            Transform your musical ideas into reality with our powerful open-source Suno AI API integration
           </p>
-          <div className="mt-6">
+          <div className="relative mt-8 flex flex-col sm:flex-row gap-4">
             <a
               href="/create"
-              className="inline-flex items-center px-6 py-3 bg-white text-indigo-900 font-medium rounded-lg hover:bg-gray-100 transition-colors shadow-lg"
+              className="inline-flex items-center px-8 py-4 bg-white text-indigo-600 font-semibold rounded-2xl hover:bg-white/95 transition-all duration-200 shadow-xl hover:shadow-2xl hover:scale-105 group"
             >
+              <svg className="mr-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+              </svg>
               Start Creating Music
-              <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="ml-3 w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </a>
+            <a
+              href="/docs"
+              className="inline-flex items-center px-8 py-4 bg-white/10 text-white font-semibold rounded-2xl hover:bg-white/20 transition-all duration-200 backdrop-blur-sm border border-white/20 hover:border-white/30"
+            >
+              <svg className="mr-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              View API Docs
+            </a>
           </div>
         </div>
-
       </Section>
+      
       <Section className="my-10">
-        <article className="prose lg:prose-lg max-w-3xl">
+        <article className="prose lg:prose-xl max-w-4xl prose-slate prose-headings:font-bold prose-headings:tracking-tight prose-a:text-indigo-600 prose-a:no-underline hover:prose-a:underline prose-code:bg-slate-100 prose-code:px-2 prose-code:py-1 prose-code:rounded-md prose-code:text-sm">
           <Markdown>
             {markdown}
           </Markdown>
-          <video controls width="1024" className="w-full border rounded-lg shadow-xl">
+          <video controls width="1024" className="w-full border border-slate-200 rounded-2xl shadow-2xl hover:shadow-3xl transition-shadow duration-300">
             <source src="/get-cookie-demo.mp4" type="video/mp4" />
             Your browser does not support frames.
           </video>
@@ -160,8 +178,6 @@ For more detailed documentation, please check out the demo site:
           </Markdown>
         </article>
       </Section>
-
-
     </>
   );
 }
