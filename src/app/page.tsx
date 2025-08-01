@@ -183,47 +183,45 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Header */}
-      <div className="border-b border-white/10 bg-black/20 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+      <div className="bg-black/20 backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                </svg>
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-white">Tune Gawd Studio</h1>
-                <p className="text-sm text-white/60">Professional AI Music Creation</p>
-              </div>
+            <div className="flex items-center gap-6">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent">
+                Create Your Sound
+              </h1>
+              <div className="h-8 w-px bg-white/20"></div>
+              <p className="text-lg text-white/70 font-medium">AI Music Studio</p>
             </div>
             
             {credits && (
-              <div className="flex items-center gap-6 bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-3 border border-white/20">
+              <div className="flex items-center gap-6 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 backdrop-blur-sm rounded-2xl px-8 py-4 border border-emerald-500/20 shadow-lg">
                 <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-                  <span className="text-sm font-medium text-white/80">Credits</span>
-                  <span className="text-xl font-bold text-white">{credits.credits_left}</span>
+                  <div className="w-3 h-3 bg-emerald-400 rounded-full shadow-sm animate-pulse"></div>
+                  <span className="text-sm font-semibold text-emerald-200">Credits Available</span>
+                  <span className="text-2xl font-bold text-white">{credits.credits_left}</span>
                 </div>
-                <div className="h-4 w-px bg-white/20"></div>
-                <div className="text-sm text-white/60">
+                <div className="h-6 w-px bg-emerald-400/30"></div>
+                <div className="text-sm text-emerald-300/80 font-medium">
                   {credits.monthly_usage}/{credits.monthly_limit} used
                 </div>
               </div>
             )}
             
             {!credits && (
-              <div className="flex items-center gap-3 bg-amber-500/10 backdrop-blur-sm rounded-2xl px-6 py-3 border border-amber-500/20">
-                <div className="w-2 h-2 bg-amber-400 rounded-full"></div>
-                <span className="text-sm font-medium text-amber-300">SUNO_COOKIE Required</span>
-                <span className="text-xs text-amber-400">Configure in .env file</span>
+              <div className="flex items-center gap-4 bg-gradient-to-r from-amber-500/10 to-orange-500/10 backdrop-blur-sm rounded-2xl px-8 py-4 border border-amber-500/20 shadow-lg">
+                <div className="w-3 h-3 bg-amber-400 rounded-full animate-pulse"></div>
+                <div>
+                  <span className="text-sm font-semibold text-amber-200 block">Setup Required</span>
+                  <span className="text-xs text-amber-300/80">Configure SUNO_COOKIE</span>
+                </div>
               </div>
             )}
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="grid xl:grid-cols-5 gap-8">
           {/* Generation Panel */}
           <div className="xl:col-span-2 space-y-6">
