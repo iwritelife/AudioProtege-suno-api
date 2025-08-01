@@ -60,7 +60,7 @@ npm install
 
 - If deployed to Vercel, add the \`SUNO_COOKIE\` environment variable in your Vercel dashboard.
 
-- If you’re running this locally, be sure to add the following to your \`.env\` file:
+- If you're running this locally, be sure to add the following to your \`.env\` file:
 
   \`\`\`bash
   SUNO_COOKIE=<your-cookie>
@@ -68,7 +68,7 @@ npm install
 
 ### 4. Launch Tune Gawd
 
-- If you’ve deployed to Vercel:
+- If you've deployed to Vercel:
   - Click Deploy in your Vercel dashboard and wait for completion.
   - Test with \`https://<your-domain>/api/get_limit\`.
 - If running locally:
