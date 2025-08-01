@@ -135,7 +135,7 @@ For complete API documentation and interactive testing:
           </p>
           <div className="relative mt-8 flex flex-col sm:flex-row gap-4">
             <a
-              href="/create"
+              href="/studio"
               className="inline-flex items-center px-8 py-4 bg-white text-indigo-600 font-semibold rounded-2xl hover:bg-white/95 transition-all duration-200 shadow-xl hover:shadow-2xl hover:scale-105 group"
             >
               <svg className="mr-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
