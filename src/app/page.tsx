@@ -28,8 +28,12 @@ export default function HomePage() {
   const fetchCredits = async () => {
     try {
       const response = await fetch('/api/get_limit');
-      const data = await response.json();
-      setCredits(data);
+      if (response.ok) {
+        const data = await response.json();
+        setCredits(data);
+      } else {
+        console.error('Failed to fetch credits:', response.statusText);
+      }
     } catch (error) {
       console.error('Error fetching credits:', error);
     }
@@ -38,10 +42,22 @@ export default function HomePage() {
   const fetchGeneratedSongs = async () => {
     try {
       const response = await fetch('/api/get');
-      const data = await response.json();
-      setGeneratedSongs(data);
+      if (response.ok) {
+        const data = await response.json();
+        // Ensure data is an array before setting state
+        if (Array.isArray(data)) {
+          setGeneratedSongs(data);
+        } else {
+          console.error('API returned non-array data:', data);
+          setGeneratedSongs([]);
+        }
+      } else {
+        console.error('Failed to fetch songs:', response.statusText);
+        setGeneratedSongs([]);
+      }
     } catch (error) {
       console.error('Error fetching songs:', error);
+      setGeneratedSongs([]);
     }
   };
 
@@ -459,7 +475,7 @@ export default function HomePage() {
                   </div>
                 ) : (
                   <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-                    {generatedSongs.map((song) => (
+                    {Array.isArray(generatedSongs) && generatedSongs.map((song) => (
                       <div key={song.id} className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:bg-white/10 transition-all duration-200">
                         <div className="p-6">
                           <div className="flex items-start justify-between mb-4">
