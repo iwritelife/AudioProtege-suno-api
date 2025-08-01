@@ -24,6 +24,13 @@ export default function Header() {
                     <p className="p-2 lg:px-6 lg:py-3 rounded-full flex justify-center items-center
                 lg:hover:bg-indigo-300 duration-200
                 ">
+                        <Link href="/create">
+                            Create Music
+                        </Link>
+                    </p>
+                    <p className="p-2 lg:px-6 lg:py-3 rounded-full flex justify-center items-center
+                lg:hover:bg-indigo-300 duration-200
+                ">
                         <Link href="/docs">
                             API Docs
                         </Link>

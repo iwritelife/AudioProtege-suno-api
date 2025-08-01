@@ -132,6 +132,17 @@ For more detailed documentation, please check out the demo site:
           <p className="text-white/80 text-lg">
             `Suno-api` is an open-source project that enables you to set up your own Suno AI API.
           </p>
+          <div className="mt-6">
+            <a
+              href="/create"
+              className="inline-flex items-center px-6 py-3 bg-white text-indigo-900 font-medium rounded-lg hover:bg-gray-100 transition-colors shadow-lg"
+            >
+              Start Creating Music
+              <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </a>
+          </div>
         </div>
 
       </Section>
