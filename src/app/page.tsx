@@ -31,7 +31,7 @@ export default function HomePage() {
       if (response.ok) {
         const data = await response.json();
         // Only set credits if we have valid data
-        if (data && !data.error) {
+        if (data && !data.error && data.credits_left !== undefined) {
           setCredits(data);
         } else {
           console.warn('SUNO_COOKIE not configured properly:', data.error);
