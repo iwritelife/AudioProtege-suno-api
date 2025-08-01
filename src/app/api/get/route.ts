@@ -35,6 +35,11 @@ export async function GET(req: NextRequest) {
       return new NextResponse(JSON.stringify([]), {
         status: 200,
         headers: {
+          'Content-Type': 'application/json',
+          ...corsHeaders
+        }
+      });
+    }
     try {
       const api = await sunoApi(cookie);
       const songs = await api.get(
@@ -52,6 +57,7 @@ export async function GET(req: NextRequest) {
       throw authError;
     }
   } else {
+    return new NextResponse(null, {
       headers: {
         Allow: 'GET',
         ...corsHeaders
