@@ -151,19 +151,27 @@ class SunoApi {
    */
   private async getAuthToken() {
     logger.info('Getting the session ID');
-    // URL to get session ID
-    const getSessionUrl = `${SunoApi.CLERK_BASE_URL}/v1/client?_is_native=true&_clerk_js_version=${SunoApi.CLERK_VERSION}`;
-    // Get session ID
-    const sessionResponse = await this.client.get(getSessionUrl, {
-      headers: { Authorization: this.cookies.__client }
-    });
-    if (!sessionResponse?.data?.response?.last_active_session_id) {
-      throw new Error(
-        'Failed to get session id, you may need to update the SUNO_COOKIE'
-      );
+    try {
+      // URL to get session ID
+      const getSessionUrl = `${SunoApi.CLERK_BASE_URL}/v1/client?_is_native=true&_clerk_js_version=${SunoApi.CLERK_VERSION}`;
+      // Get session ID
+      const sessionResponse = await this.client.get(getSessionUrl, {
+        headers: { Authorization: this.cookies.__client }
+      });
+      if (!sessionResponse?.data?.response?.last_active_session_id) {
+        throw new Error(
+          'Failed to get session id, you may need to update the SUNO_COOKIE'
+        );
+      }
+      // Save session ID for later use
+      this.sid = sessionResponse.data.response.last_active_session_id;
+    } catch (error: any) {
+      logger.error('Authentication failed:', error.message);
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        throw new Error('SUNO_COOKIE is invalid or expired. Please update it with a fresh cookie from suno.com');
+      }
+      throw new Error('Failed to get session id, you may need to update the SUNO_COOKIE');
     }
-    // Save session ID for later use
-    this.sid = sessionResponse.data.response.last_active_session_id;
   }
 
   /**

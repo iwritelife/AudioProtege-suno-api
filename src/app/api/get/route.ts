@@ -31,7 +31,22 @@ export async function GET(req: NextRequest) {
     } catch (error) {
       console.error('Error fetching audio:', error);
 
-      // Return empty array when SUNO_COOKIE is invalid/missing
+      // Handle specific authentication errors
+      if (error instanceof Error && 
+          (error.message.includes('Failed to get session id') || 
+           error.message.includes('SUNO_COOKIE') ||
+           error.message.includes('invalid or expired'))) {
+        console.warn('Authentication failed, returning empty array:', error.message);
+        return new NextResponse(JSON.stringify([]), {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+            ...corsHeaders
+          }
+        });
+      }
+      
+      // For other errors, still return empty array to prevent crashes
       return new NextResponse(JSON.stringify([]), {
         status: 200,
         headers: {
@@ -39,22 +54,6 @@ export async function GET(req: NextRequest) {
           ...corsHeaders
         }
       });
-    }
-    try {
-      const api = await sunoApi(cookie);
-      const songs = await api.get(
-        ids ? ids.split(',') : undefined,
-        page
-      );
-      return NextResponse.json(songs);
-    } catch (authError: any) {
-      // Handle authentication errors gracefully
-      if (authError.message?.includes('Failed to get session id') || 
-          authError.message?.includes('SUNO_COOKIE')) {
-        console.warn('Authentication failed, returning empty array:', authError.message);
-        return NextResponse.json([]);
-      }
-      throw authError;
     }
   } else {
     return new NextResponse(null, {
