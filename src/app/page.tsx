@@ -1,178 +1,561 @@
-import Section from "./components/Section";
-import Markdown from 'react-markdown';
+'use client';
 
+import { useState, useEffect } from 'react';
+import { AudioInfo } from '@/lib/SunoApi';
 
-export default function Home() {
+export default function HomePage() {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedSongs, setGeneratedSongs] = useState<AudioInfo[]>([]);
+  const [activeTab, setActiveTab] = useState<'simple' | 'custom'>('simple');
+  const [error, setError] = useState<string | null>(null);
+  const [credits, setCredits] = useState<any>(null);
 
-  const markdown = `
+  // Simple mode form state
+  const [simplePrompt, setSimplePrompt] = useState('');
+  const [makeInstrumental, setMakeInstrumental] = useState(false);
 
----
-## 🎵 Welcome to Tune Gawd
+  // Custom mode form state
+  const [customPrompt, setCustomPrompt] = useState('');
+  const [tags, setTags] = useState('');
+  const [title, setTitle] = useState('');
+  const [customInstrumental, setCustomInstrumental] = useState(false);
 
-Tune Gawd is the ultimate AI-powered music creation platform. We've harnessed the power of advanced AI technology to help you create professional-quality music in minutes, not hours.
+  useEffect(() => {
+    fetchCredits();
+    fetchGeneratedSongs();
+  }, []);
 
-Whether you're a seasoned producer, aspiring artist, or just someone with a musical idea, Tune Gawd makes music creation accessible to everyone.
+  const fetchCredits = async () => {
+    try {
+      const response = await fetch('/api/get_limit');
+      const data = await response.json();
+      setCredits(data);
+    } catch (error) {
+      console.error('Error fetching credits:', error);
+    }
+  };
 
-Follow our journey on Github: [github.com/gcui-art/suno-api](https://github.com/gcui-art/suno-api) ⭐
+  const fetchGeneratedSongs = async () => {
+    try {
+      const response = await fetch('/api/get');
+      const data = await response.json();
+      setGeneratedSongs(data);
+    } catch (error) {
+      console.error('Error fetching songs:', error);
+    }
+  };
 
-## ✨ Why Choose Tune Gawd?
+  const handleSimpleGenerate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!simplePrompt.trim()) return;
 
-- **Professional Quality**: Generate studio-quality music with advanced AI
-- **Lightning Fast**: Create complete songs in under 60 seconds
-- **Full Creative Control**: Custom lyrics, genres, and musical styles
-- **Easy to Use**: Intuitive interface designed for creators of all levels
-- **Multiple Formats**: Download MP3s and shareable video content
-- **API Integration**: Compatible with OpenAI's chat completions format
-- **Open Source**: Built on open-source technology you can trust
+    setIsGenerating(true);
+    setError(null);
 
-## 🚀 Quick Start Guide
+    try {
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt: simplePrompt,
+          make_instrumental: makeInstrumental,
+          wait_audio: true,
+        }),
+      });
 
-### 1. Get Your Suno.ai Account Ready
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to generate music');
+      }
 
-1. Visit [suno.com/create](https://suno.com/create) in your browser.
-2. Open up the browser console: hit \`F12\` or access the \`Developer Tools\`.
-3. Navigate to the \`Network\` tab.
-4. Give the page a quick refresh.
-5. Find the request containing \`client?_clerk_js_version\`.
-6. Click on it and switch over to the \`Header\` tab.
-7. Copy the \`Cookie\` value from the headers.
-`;
+      const newSongs = await response.json();
+      setGeneratedSongs(prev => [...newSongs, ...prev]);
+      setSimplePrompt('');
+      fetchCredits();
+    } catch (error: any) {
+      setError(error.message);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
+  const handleCustomGenerate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!customPrompt.trim() || !tags.trim() || !title.trim()) return;
 
-  const markdown_part2 = `
-### 2. Deploy Tune Gawd
+    setIsGenerating(true);
+    setError(null);
 
-You can choose your preferred deployment method:
+    try {
+      const response = await fetch('/api/custom_generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt: customPrompt,
+          tags: tags,
+          title: title,
+          make_instrumental: customInstrumental,
+          wait_audio: true,
+        }),
+      });
 
-#### Deploy to Vercel
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to generate music');
+      }
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fgcui-art%2Fsuno-api&env=SUNO_COOKIE&project-name=suno-api&repository-name=suno-api)
+      const newSongs = await response.json();
+      setGeneratedSongs(prev => [...newSongs, ...prev]);
+      setCustomPrompt('');
+      setTags('');
+      setTitle('');
+      fetchCredits();
+    } catch (error: any) {
+      setError(error.message);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
-#### Run locally
+  const downloadSong = (song: AudioInfo) => {
+    if (song.audio_url) {
+      const link = document.createElement('a');
+      link.href = song.audio_url;
+      link.download = `${song.title || 'song'}.mp3`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
 
-\`\`\`bash
-git clone https://github.com/gcui-art/tune-gawd.git
-cd tune-gawd
-npm install
-\`\`\`
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
-### 3. Configure Tune Gawd
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'complete':
+      case 'streaming':
+        return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+      case 'submitted':
+      case 'queued':
+        return 'bg-amber-100 text-amber-700 border-amber-200';
+      case 'error':
+        return 'bg-red-100 text-red-700 border-red-200';
+      default:
+        return 'bg-slate-100 text-slate-700 border-slate-200';
+    }
+  };
 
-- If deployed to Vercel, add the \`SUNO_COOKIE\` environment variable in your Vercel dashboard.
-
-- If you're running this locally, be sure to add the following to your \`.env\` file:
-
-  \`\`\`bash
-  SUNO_COOKIE=<your-cookie>
-  \`\`\`
-
-### 4. Launch Tune Gawd
-
-- If you've deployed to Vercel:
-  - Click Deploy in your Vercel dashboard and wait for completion.
-  - Test with \`https://<your-domain>/api/get_limit\`.
-- If running locally:
-  - Run \`npm run dev\`.
-  - Test with \`http://localhost:3000/api/get_limit\`.
-- Success response:
-
-  \`\`\`json
-  {
-    "credits_left": 50,
-    "period": "day",
-    "monthly_limit": 50,
-    "monthly_usage": 50
-  }
-  \`\`\`
-
-### 5. Start Creating Music
-
-Visit the \`/create\` page to start generating your first tracks, or explore our comprehensive API documentation.
-
-## 🎹 API Reference
-
-Tune Gawd provides a comprehensive set of APIs for music generation:
-
-\`\`\`bash
-- \`/api/generate\`: Generate music
-- \`/v1/chat/completions\`: OpenAI-compatible music generation
-- \`/api/custom_generate\`: Custom mode with full creative control
-- \`/api/generate_lyrics\`: Generate lyrics based on prompt
-- \`/api/get\`: Retrieve your music library
-- \`/api/get_limit\`: Check your usage and limits
-- \`/api/extend_audio\`: Extend audio length
-- \`/api/generate_stems\`: Create stem tracks
-- \`/api/get_aligned_lyrics\`: Get lyric timestamps
-- \`/api/concat\`: Combine audio extensions
-\`\`\`
-
-For complete API documentation and interactive testing:
-
-👉 [Visit our API Documentation](/docs)
-
-`;
   return (
-    <>
-      <Section className="">
-        <div className="flex flex-col m-auto py-24 text-center items-center justify-center gap-6 my-12
-        lg:px-24 px-6
-        bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 rounded-3xl border border-indigo-500/20 shadow-2xl hover:shadow-3xl transition-all duration-300 relative overflow-hidden">
-          {/* Background decoration */}
-          <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent"></div>
-          <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-white/10 to-transparent rounded-full -translate-y-48 translate-x-48"></div>
-          
-          <span className="relative px-6 py-2 text-xs font-medium border rounded-full 
-          border-white/30 uppercase text-white/80 bg-white/10 backdrop-blur-sm">
-            AI Music Studio
-          </span>
-          <h1 className="relative font-bold text-6xl lg:text-7xl text-white/95 tracking-tight">
-            <span className="bg-gradient-to-r from-white to-white/90 bg-clip-text text-transparent">
-              Tune Gawd
-            </span>
-          </h1>
-          <p className="relative text-white/85 text-xl lg:text-2xl max-w-3xl leading-relaxed font-light">
-            Create professional music with AI. Transform your ideas into chart-topping hits with our advanced music generation platform.
-          </p>
-          <div className="relative mt-8 flex flex-col sm:flex-row gap-4">
-            <a
-              href="/studio"
-              className="inline-flex items-center px-8 py-4 bg-white text-indigo-600 font-semibold rounded-2xl hover:bg-white/95 transition-all duration-200 shadow-xl hover:shadow-2xl hover:scale-105 group"
-            >
-              <svg className="mr-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-              </svg>
-              Start Creating Music
-              <svg className="ml-3 w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </a>
-            <a
-              href="/docs"
-              className="inline-flex items-center px-8 py-4 bg-white/10 text-white font-semibold rounded-2xl hover:bg-white/20 transition-all duration-200 backdrop-blur-sm border border-white/20 hover:border-white/30"
-            >
-              <svg className="mr-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              View API Docs
-            </a>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      {/* Header */}
+      <div className="border-b border-white/10 bg-black/20 backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                </svg>
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-white">Tune Gawd Studio</h1>
+                <p className="text-sm text-white/60">Professional AI Music Creation</p>
+              </div>
+            </div>
+            
+            {credits && (
+              <div className="flex items-center gap-6 bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-3 border border-white/20">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                  <span className="text-sm font-medium text-white/80">Credits</span>
+                  <span className="text-xl font-bold text-white">{credits.credits_left}</span>
+                </div>
+                <div className="h-4 w-px bg-white/20"></div>
+                <div className="text-sm text-white/60">
+                  {credits.monthly_usage}/{credits.monthly_limit} used
+                </div>
+              </div>
+            )}
           </div>
         </div>
-      </Section>
-      
-      <Section className="my-10">
-        <article className="prose lg:prose-xl max-w-4xl prose-slate prose-headings:font-bold prose-headings:tracking-tight prose-a:text-indigo-600 prose-a:no-underline hover:prose-a:underline prose-code:bg-slate-100 prose-code:px-2 prose-code:py-1 prose-code:rounded-md prose-code:text-sm">
-          <Markdown>
-            {markdown}
-          </Markdown>
-          <video controls width="1024" className="w-full border border-slate-200 rounded-2xl shadow-2xl hover:shadow-3xl transition-shadow duration-300">
-            <source src="/get-cookie-demo.mp4" type="video/mp4" />
-            Your browser does not support frames.
-          </video>
-          <Markdown>
-            {markdown_part2}
-          </Markdown>
-        </article>
-      </Section>
-    </>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="grid xl:grid-cols-5 gap-8">
+          {/* Generation Panel */}
+          <div className="xl:col-span-2 space-y-6">
+            {/* Tab Selector */}
+            <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-2 border border-white/10">
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => setActiveTab('simple')}
+                  className={`py-4 px-6 rounded-2xl text-sm font-semibold transition-all duration-300 ${
+                    activeTab === 'simple'
+                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
+                      : 'text-white/60 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    Quick Generate
+                  </div>
+                </button>
+                <button
+                  onClick={() => setActiveTab('custom')}
+                  className={`py-4 px-6 rounded-2xl text-sm font-semibold transition-all duration-300 ${
+                    activeTab === 'custom'
+                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
+                      : 'text-white/60 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
+                    </svg>
+                    Custom Studio
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {/* Error Display */}
+            {error && (
+              <div className="bg-red-500/10 backdrop-blur-xl border border-red-500/20 rounded-3xl p-6">
+                <div className="flex items-start gap-3">
+                  <svg className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div>
+                    <h3 className="text-sm font-semibold text-red-300 mb-1">Generation Error</h3>
+                    <p className="text-sm text-red-400">{error}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Simple Mode Form */}
+            {activeTab === 'simple' && (
+              <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden">
+                <div className="p-8">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center">
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-bold text-white">Quick Generate</h2>
+                      <p className="text-sm text-white/60">Describe your music and let AI create it</p>
+                    </div>
+                  </div>
+                  
+                  <form onSubmit={handleSimpleGenerate} className="space-y-6">
+                    <div>
+                      <label htmlFor="simple-prompt" className="block text-sm font-semibold text-white/80 mb-3">
+                        Music Description
+                      </label>
+                      <textarea
+                        id="simple-prompt"
+                        value={simplePrompt}
+                        onChange={(e) => setSimplePrompt(e.target.value)}
+                        placeholder="A dreamy synthwave track with nostalgic 80s vibes, perfect for late night drives..."
+                        className="w-full px-4 py-4 bg-white/10 border border-white/20 rounded-2xl focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all duration-200 resize-none text-white placeholder-white/40 backdrop-blur-sm"
+                        rows={4}
+                        required
+                      />
+                    </div>
+                    
+                    <div className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl border border-white/10">
+                      <input
+                        id="simple-instrumental"
+                        type="checkbox"
+                        checked={makeInstrumental}
+                        onChange={(e) => setMakeInstrumental(e.target.checked)}
+                        className="w-5 h-5 text-purple-600 bg-white/10 border-white/20 rounded-lg focus:ring-2 focus:ring-purple-500/50"
+                      />
+                      <label htmlFor="simple-instrumental" className="text-sm font-medium text-white/80">
+                        Generate instrumental version (no vocals)
+                      </label>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isGenerating || !simplePrompt.trim()}
+                      className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 px-6 rounded-2xl font-semibold hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg"
+                    >
+                      {isGenerating ? (
+                        <div className="flex items-center justify-center gap-3">
+                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                          <span>Creating your music...</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center gap-2">
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                          </svg>
+                          Generate Music
+                        </div>
+                      )}
+                    </button>
+                  </form>
+                </div>
+              </div>
+            )}
+
+            {/* Custom Mode Form */}
+            {activeTab === 'custom' && (
+              <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden">
+                <div className="p-8">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-500 rounded-2xl flex items-center justify-center">
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-bold text-white">Custom Studio</h2>
+                      <p className="text-sm text-white/60">Full control over your music creation</p>
+                    </div>
+                  </div>
+                  
+                  <form onSubmit={handleCustomGenerate} className="space-y-6">
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="title" className="block text-sm font-semibold text-white/80 mb-3">
+                          Song Title
+                        </label>
+                        <input
+                          id="title"
+                          type="text"
+                          value={title}
+                          onChange={(e) => setTitle(e.target.value)}
+                          placeholder="Midnight Dreams"
+                          className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-2xl focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 transition-all duration-200 text-white placeholder-white/40 backdrop-blur-sm"
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <label htmlFor="tags" className="block text-sm font-semibold text-white/80 mb-3">
+                          Genre & Style
+                        </label>
+                        <input
+                          id="tags"
+                          type="text"
+                          value={tags}
+                          onChange={(e) => setTags(e.target.value)}
+                          placeholder="synthwave dreamy electronic"
+                          className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-2xl focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 transition-all duration-200 text-white placeholder-white/40 backdrop-blur-sm"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label htmlFor="custom-prompt" className="block text-sm font-semibold text-white/80 mb-3">
+                        Lyrics & Structure
+                      </label>
+                      <textarea
+                        id="custom-prompt"
+                        value={customPrompt}
+                        onChange={(e) => setCustomPrompt(e.target.value)}
+                        placeholder="[Verse 1]&#10;Walking through the neon lights&#10;City dreams and endless nights&#10;&#10;[Chorus]&#10;We're chasing midnight dreams..."
+                        className="w-full px-4 py-4 bg-white/10 border border-white/20 rounded-2xl focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 transition-all duration-200 resize-none text-white placeholder-white/40 backdrop-blur-sm"
+                        rows={6}
+                        required
+                      />
+                    </div>
+                    
+                    <div className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl border border-white/10">
+                      <input
+                        id="custom-instrumental"
+                        type="checkbox"
+                        checked={customInstrumental}
+                        onChange={(e) => setCustomInstrumental(e.target.checked)}
+                        className="w-5 h-5 text-pink-600 bg-white/10 border-white/20 rounded-lg focus:ring-2 focus:ring-pink-500/50"
+                      />
+                      <label htmlFor="custom-instrumental" className="text-sm font-medium text-white/80">
+                        Generate instrumental version (no vocals)
+                      </label>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isGenerating || !customPrompt.trim() || !tags.trim() || !title.trim()}
+                      className="w-full bg-gradient-to-r from-pink-600 to-purple-600 text-white py-4 px-6 rounded-2xl font-semibold hover:from-pink-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-pink-500/50 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg"
+                    >
+                      {isGenerating ? (
+                        <div className="flex items-center justify-center gap-3">
+                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                          <span>Crafting your masterpiece...</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center gap-2">
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                          </svg>
+                          Create Custom Music
+                        </div>
+                      )}
+                    </button>
+                  </form>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Music Library */}
+          <div className="xl:col-span-3">
+            <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden">
+              <div className="p-8">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center">
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-bold text-white">Your Music Library</h2>
+                      <p className="text-sm text-white/60">
+                        {generatedSongs.length} {generatedSongs.length === 1 ? 'Track' : 'Tracks'}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <button
+                    onClick={fetchGeneratedSongs}
+                    className="flex items-center gap-2 text-sm text-white/60 hover:text-white font-medium px-4 py-2 rounded-xl hover:bg-white/5 transition-all duration-200"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Refresh
+                  </button>
+                </div>
+
+                {generatedSongs.length === 0 ? (
+                  <div className="text-center py-16">
+                    <div className="w-20 h-20 mx-auto mb-6 bg-white/5 rounded-3xl flex items-center justify-center">
+                      <svg className="w-10 h-10 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                      </svg>
+                    </div>
+                    <h3 className="text-xl font-semibold text-white mb-2">No music created yet</h3>
+                    <p className="text-white/60 max-w-sm mx-auto">Start by generating your first song using the forms on the left. Your creations will appear here.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                    {generatedSongs.map((song) => (
+                      <div key={song.id} className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:bg-white/10 transition-all duration-200">
+                        <div className="p-6">
+                          <div className="flex items-start justify-between mb-4">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-3 mb-2">
+                                <h4 className="text-lg font-semibold text-white truncate">
+                                  {song.title || 'Untitled Track'}
+                                </h4>
+                                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(song.status)}`}>
+                                  {song.status.charAt(0).toUpperCase() + song.status.slice(1)}
+                                </span>
+                              </div>
+                              <p className="text-sm text-white/60 mb-3">
+                                Created {formatDate(song.created_at)}
+                              </p>
+                            </div>
+                          </div>
+
+                          {song.tags && (
+                            <div className="flex flex-wrap gap-2 mb-4">
+                              {song.tags.split(' ').slice(0, 4).map((tag, index) => (
+                                <span key={index} className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Audio Player */}
+                          {song.audio_url ? (
+                            <div className="bg-white/5 rounded-2xl p-4 mb-4">
+                              <audio controls className="w-full">
+                                <source src={song.audio_url} type="audio/mpeg" />
+                                Your browser does not support the audio element.
+                              </audio>
+                            </div>
+                          ) : (
+                            <div className="bg-white/5 rounded-2xl p-6 mb-4 text-center">
+                              <div className="w-8 h-8 border-2 border-white/30 border-t-purple-500 rounded-full animate-spin mx-auto mb-3"></div>
+                              <p className="text-sm text-white/60">Generating audio...</p>
+                            </div>
+                          )}
+
+                          {(song.status === 'complete' || song.status === 'streaming') && song.audio_url && (
+                            <div className="flex gap-3">
+                              <button
+                                onClick={() => downloadSong(song)}
+                                className="flex items-center gap-2 px-4 py-2 text-sm bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all duration-200 font-medium border border-white/20"
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                Download MP3
+                              </button>
+                              {song.video_url && (
+                                <a
+                                  href={song.video_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center gap-2 px-4 py-2 text-sm bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all duration-200 font-medium border border-white/20"
+                                >
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                  </svg>
+                                  Watch Video
+                                </a>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.3);
+          border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.5);
+        }
+      `}</style>
+    </div>
   );
 }
