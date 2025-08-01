@@ -30,12 +30,20 @@ export default function HomePage() {
       const response = await fetch('/api/get_limit');
       if (response.ok) {
         const data = await response.json();
-        setCredits(data);
+        // Only set credits if we have valid data
+        if (data && !data.error) {
+          setCredits(data);
+        } else {
+          console.warn('SUNO_COOKIE not configured properly:', data.error);
+          setCredits(null);
+        }
       } else {
         console.error('Failed to fetch credits:', response.statusText);
+        setCredits(null);
       }
     } catch (error) {
       console.error('Error fetching credits:', error);
+      setCredits(null);
     }
   };
 
@@ -201,6 +209,14 @@ export default function HomePage() {
                 <div className="text-sm text-white/60">
                   {credits.monthly_usage}/{credits.monthly_limit} used
                 </div>
+              </div>
+            )}
+            
+            {!credits && (
+              <div className="flex items-center gap-3 bg-amber-500/10 backdrop-blur-sm rounded-2xl px-6 py-3 border border-amber-500/20">
+                <div className="w-2 h-2 bg-amber-400 rounded-full"></div>
+                <span className="text-sm font-medium text-amber-300">SUNO_COOKIE Required</span>
+                <span className="text-xs text-amber-400">Configure in .env file</span>
               </div>
             )}
           </div>

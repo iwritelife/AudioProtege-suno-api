@@ -8,10 +8,8 @@ export const dynamic = "force-dynamic";
 export async function GET(req: NextRequest) {
   if (req.method === 'GET') {
     try {
-
       const limit = await (await sunoApi((await cookies()).toString())).get_credits();
-
-
+      
       return new NextResponse(JSON.stringify(limit), {
         status: 200,
         headers: {
@@ -21,9 +19,18 @@ export async function GET(req: NextRequest) {
       });
     } catch (error) {
       console.error('Error fetching limit:', error);
-
-      return new NextResponse(JSON.stringify({ error: 'Internal server error. ' + error }), {
-        status: 500,
+      
+      // Return mock data when SUNO_COOKIE is invalid/missing
+      const mockLimit = {
+        credits_left: 0,
+        period: "day",
+        monthly_limit: 50,
+        monthly_usage: 0,
+        error: "SUNO_COOKIE not configured or invalid"
+      };
+      
+      return new NextResponse(JSON.stringify(mockLimit), {
+        status: 200,
         headers: {
           'Content-Type': 'application/json',
           ...corsHeaders

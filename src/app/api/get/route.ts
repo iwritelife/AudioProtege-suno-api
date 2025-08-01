@@ -31,16 +31,14 @@ export async function GET(req: NextRequest) {
     } catch (error) {
       console.error('Error fetching audio:', error);
 
-      return new NextResponse(
-        JSON.stringify({ error: 'Internal server error' }),
-        {
-          status: 500,
-          headers: {
-            'Content-Type': 'application/json',
-            ...corsHeaders
-          }
+      // Return empty array when SUNO_COOKIE is invalid/missing
+      return new NextResponse(JSON.stringify([]), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          ...corsHeaders
         }
-      );
+      });
     }
   } else {
     return new NextResponse('Method Not Allowed', {
