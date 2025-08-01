@@ -7,40 +7,40 @@ export default function Home() {
   const markdown = `
 
 ---
-## 👋 Introduction
+## 🎵 Welcome to Tune Gawd
 
-Suno.ai v3 is an amazing AI music service. Although the official API is not yet available, we couldn't wait to integrate its capabilities somewhere.
+Tune Gawd is the ultimate AI-powered music creation platform. We've harnessed the power of advanced AI technology to help you create professional-quality music in minutes, not hours.
 
-We discovered that some users have similar needs, so we decided to open-source this project, hoping you'll like it.
+Whether you're a seasoned producer, aspiring artist, or just someone with a musical idea, Tune Gawd makes music creation accessible to everyone.
 
-We update quickly, please star us on Github:  [github.com/gcui-art/suno-api](https://github.com/gcui-art/suno-api) ⭐
+Follow our journey on Github: [github.com/gcui-art/suno-api](https://github.com/gcui-art/suno-api) ⭐
 
-## 🌟 Features
+## ✨ Why Choose Tune Gawd?
 
-- Perfectly implements the creation API from \`app.suno.ai\`
-- Compatible with the format of OpenAI’s \`/v1/chat/completions\` API.
-- Automatically keep the account active.
-- Supports \`Custom Mode\`
-- One-click deployment to Vercel
-- In addition to the standard API, it also adapts to the API Schema of Agent platforms like GPTs and Coze, so you can use it as a tool/plugin/Action for LLMs and integrate it into any AI Agent.
-- Permissive open-source license, allowing you to freely integrate and modify.
+- **Professional Quality**: Generate studio-quality music with advanced AI
+- **Lightning Fast**: Create complete songs in under 60 seconds
+- **Full Creative Control**: Custom lyrics, genres, and musical styles
+- **Easy to Use**: Intuitive interface designed for creators of all levels
+- **Multiple Formats**: Download MP3s and shareable video content
+- **API Integration**: Compatible with OpenAI's chat completions format
+- **Open Source**: Built on open-source technology you can trust
 
-## 🚀 Getting Started
+## 🚀 Quick Start Guide
 
-### 1. Obtain the cookie of your app.suno.ai account
+### 1. Get Your Suno.ai Account Ready
 
-1. Head over to [app.suno.ai](https://app.suno.ai) using your browser.
+1. Visit [suno.com/create](https://suno.com/create) in your browser.
 2. Open up the browser console: hit \`F12\` or access the \`Developer Tools\`.
-3. Navigate to the \`Network tab\`.
+3. Navigate to the \`Network\` tab.
 4. Give the page a quick refresh.
-5. Identify the request that includes the keyword \`client?_clerk_js_version\`.
+5. Find the request containing \`client?_clerk_js_version\`.
 6. Click on it and switch over to the \`Header\` tab.
-7. Locate the \`Cookie\` section, hover your mouse over it, and copy the value of the Cookie.
+7. Copy the \`Cookie\` value from the headers.
 `;
 
 
   const markdown_part2 = `
-### 2. Clone and deploy this project
+### 2. Deploy Tune Gawd
 
 You can choose your preferred deployment method:
 
@@ -51,14 +51,14 @@ You can choose your preferred deployment method:
 #### Run locally
 
 \`\`\`bash
-git clone https://github.com/gcui-art/suno-api.git
-cd suno-api
+git clone https://github.com/gcui-art/tune-gawd.git
+cd tune-gawd
 npm install
 \`\`\`
 
-### 3. Configure suno-api
+### 3. Configure Tune Gawd
 
-- If deployed to Vercel, please add an environment variable \`SUNO_COOKIE\` in the Vercel dashboard, with the value of the cookie obtained in the first step.
+- If deployed to Vercel, add the \`SUNO_COOKIE\` environment variable in your Vercel dashboard.
 
 - If you’re running this locally, be sure to add the following to your \`.env\` file:
 
@@ -66,15 +66,15 @@ npm install
   SUNO_COOKIE=<your-cookie>
   \`\`\`
 
-### 4. Run suno-api
+### 4. Launch Tune Gawd
 
 - If you’ve deployed to Vercel:
-  - Please click on Deploy in the Vercel dashboard and wait for the deployment to be successful.
-  - Visit the \`https://<vercel-assigned-domain>/api/get_limit\` API for testing.
+  - Click Deploy in your Vercel dashboard and wait for completion.
+  - Test with \`https://<your-domain>/api/get_limit\`.
 - If running locally:
   - Run \`npm run dev\`.
-  - Visit the \`http://localhost:3000/api/get_limit\` API for testing.
-- If the following result is returned:
+  - Test with \`http://localhost:3000/api/get_limit\`.
+- Success response:
 
   \`\`\`json
   {
@@ -85,35 +85,30 @@ npm install
   }
   \`\`\`
 
-it means the program is running normally.
+### 5. Start Creating Music
 
-### 5. Use Suno API
+Visit the \`/create\` page to start generating your first tracks, or explore our comprehensive API documentation.
 
-You can check out the detailed API documentation at [suno.gcui.ai/docs](https://suno.gcui.ai/docs).
+## 🎹 API Reference
 
-## 📚 API Reference
-
-Suno API currently mainly implements the following APIs:
+Tune Gawd provides a comprehensive set of APIs for music generation:
 
 \`\`\`bash
 - \`/api/generate\`: Generate music
-- \`/v1/chat/completions\`: Generate music - Call the generate API in a format 
-  that works with OpenAI’s API.
-- \`/api/custom_generate\`: Generate music (Custom Mode, support setting lyrics, 
-  music style, title, etc.)
+- \`/v1/chat/completions\`: OpenAI-compatible music generation
+- \`/api/custom_generate\`: Custom mode with full creative control
 - \`/api/generate_lyrics\`: Generate lyrics based on prompt
-- \`/api/get\`: Get music list
-- \`/api/get?ids=\`: Get music Info by id, separate multiple id with ",".
-- \`/api/get_limit\`: Get quota Info
+- \`/api/get\`: Retrieve your music library
+- \`/api/get_limit\`: Check your usage and limits
 - \`/api/extend_audio\`: Extend audio length
-- \`/api/generate_stems\`: Make stem tracks (separate audio and music track)
-- \`/api/get_aligned_lyrics\`: Get list of timestamps for each word in the lyrics
-- \`/api/concat\`: Generate the whole song from extensions
+- \`/api/generate_stems\`: Create stem tracks
+- \`/api/get_aligned_lyrics\`: Get lyric timestamps
+- \`/api/concat\`: Combine audio extensions
 \`\`\`
 
-For more detailed documentation, please check out the demo site:
+For complete API documentation and interactive testing:
 
-👉 [suno.gcui.ai/docs](https://suno.gcui.ai/docs)
+👉 [Visit our API Documentation](/docs)
 
 `;
   return (
@@ -128,15 +123,15 @@ For more detailed documentation, please check out the demo site:
           
           <span className="relative px-6 py-2 text-xs font-medium border rounded-full 
           border-white/30 uppercase text-white/80 bg-white/10 backdrop-blur-sm">
-            Unofficial
+            AI Music Studio
           </span>
           <h1 className="relative font-bold text-6xl lg:text-7xl text-white/95 tracking-tight">
             <span className="bg-gradient-to-r from-white to-white/90 bg-clip-text text-transparent">
-              Suno AI API
+              Tune Gawd
             </span>
           </h1>
           <p className="relative text-white/85 text-xl lg:text-2xl max-w-3xl leading-relaxed font-light">
-            Transform your musical ideas into reality with our powerful open-source Suno AI API integration
+            Create professional music with AI. Transform your ideas into chart-topping hits with our advanced music generation platform.
           </p>
           <div className="relative mt-8 flex flex-col sm:flex-row gap-4">
             <a

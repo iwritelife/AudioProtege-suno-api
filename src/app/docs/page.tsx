@@ -11,32 +11,29 @@ export default function Docs() {
             <Section className="my-10">
                 <article className="prose lg:prose-lg max-w-3xl pt-10">
                     <h1 className=' text-center text-indigo-900'>
-                        API Docs
+                        Tune Gawd API Documentation
                     </h1>
                     <Markdown>
                         {`                     
 ---
-\`gcui-art/suno-api\` currently mainly implements the following APIs:
+\`Tune Gawd\` provides comprehensive APIs for AI music generation:
 
 \`\`\`bash
 - \`/api/generate\`: Generate music
-- \`/v1/chat/completions\`: Generate music - Call the generate API in a format 
-  that works with OpenAI’s API.
-- \`/api/custom_generate\`: Generate music (Custom Mode, support setting lyrics, 
-  music style, title, etc.)
+- \`/v1/chat/completions\`: OpenAI-compatible music generation endpoint
+- \`/api/custom_generate\`: Custom mode with full creative control (lyrics, style, title)
 - \`/api/generate_lyrics\`: Generate lyrics based on prompt
-- \`/api/get\`: Get music information based on the id. Use “,” to separate multiple 
-    ids.  If no IDs are provided, all music will be returned.
-- \`/api/get_limit\`: Get quota Info
+- \`/api/get\`: Retrieve music by ID or get your complete library
+- \`/api/get_limit\`: Check usage limits and remaining credits
 - \`/api/extend_audio\`: Extend audio length
-- \`/api/generate_stems\`: Make stem tracks (separate audio and music track)
-- \`/api/get_aligned_lyrics\`: Get list of timestamps for each word in the lyrics
-- \`/api/clip\`:  Get clip information based on ID passed as query parameter \`id\`
-- \`/api/concat\`: Generate the whole song from extensions
-- \`/api/persona\`: Get persona information and clips based on ID and page number
+- \`/api/generate_stems\`: Create separate audio and music tracks
+- \`/api/get_aligned_lyrics\`: Get word-level lyric timestamps
+- \`/api/clip\`: Get detailed clip information
+- \`/api/concat\`: Combine audio extensions into full songs
+- \`/api/persona\`: Access persona-based music generation
 \`\`\`
 
-Feel free to explore the detailed API parameters and conduct tests on this page.
+Explore detailed parameters and test all endpoints interactively below.
                         `}
                     </Markdown>
                 </article>
@@ -44,10 +41,10 @@ Feel free to explore the detailed API parameters and conduct tests on this page.
             <Section className="my-10">
                 <article className='prose lg:prose-lg max-w-3xl py-10'>
                     <h2 className='text-center'>
-                        Details of the API and testing it online
+                        Interactive API Testing & Documentation
                     </h2>
                     <p className='text-red-800 italic'>
-                        This is just a demo, bound to a test account. Please do not use it frequently, so that more people can test online.
+                        Demo environment with rate limits. Please use responsibly to ensure availability for all users.
                     </p>
                 </article>
 

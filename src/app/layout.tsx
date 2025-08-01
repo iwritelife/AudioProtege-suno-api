@@ -8,10 +8,10 @@ import { Analytics } from "@vercel/analytics/react"
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "suno api",
-  description: "Use API to call the music generation ai of suno.ai",
-  keywords: ["suno", "suno api", "suno.ai", "api", "music", "generation", "ai"],
-  creator: "@gcui.ai",
+  title: "Tune Gawd - AI Music Studio",
+  description: "Create professional music with AI. Transform your ideas into hits with Tune Gawd's advanced music generation platform.",
+  keywords: ["tune gawd", "ai music", "music generation", "ai studio", "create music", "music ai", "song generator"],
+  creator: "Tune Gawd",
 };
 
 export default function RootLayout({

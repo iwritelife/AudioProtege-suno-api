@@ -132,12 +132,12 @@ export default function CreatePage() {
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">
               <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
               </svg>
-              <h1 className="text-5xl font-bold tracking-tight">AI Music Studio</h1>
+              <h1 className="text-5xl font-bold tracking-tight">Tune Gawd Studio</h1>
             </div>
             <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
-              Transform your ideas into professional music with advanced AI technology
+              Create chart-topping hits with AI. Your musical vision, our advanced technology.
             </p>
             
             {/* Credits Display */}

@@ -10,7 +10,7 @@ export default function Header() {
                 <div className="font-bold text-2xl bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
                     <Logo className="w-4 h-4" />
                     <Link href='/'>
-                        Suno API
+                        Tune Gawd
                     </Link>
                 </div>
                 <div className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700">
