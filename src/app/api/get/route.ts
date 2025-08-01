@@ -35,13 +35,23 @@ export async function GET(req: NextRequest) {
       return new NextResponse(JSON.stringify([]), {
         status: 200,
         headers: {
-          'Content-Type': 'application/json',
-          ...corsHeaders
-        }
-      });
+    try {
+      const api = await sunoApi(cookie);
+      const songs = await api.get(
+        ids ? ids.split(',') : undefined,
+        page
+      );
+      return NextResponse.json(songs);
+    } catch (authError: any) {
+      // Handle authentication errors gracefully
+      if (authError.message?.includes('Failed to get session id') || 
+          authError.message?.includes('SUNO_COOKIE')) {
+        console.warn('Authentication failed, returning empty array:', authError.message);
+        return NextResponse.json([]);
+      }
+      throw authError;
     }
   } else {
-    return new NextResponse('Method Not Allowed', {
       headers: {
         Allow: 'GET',
         ...corsHeaders
